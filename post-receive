@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# Sends a webhook notification to a Slack channel which looks like:
+#
+#    hostname - commit 870d9216d51dceaa64d60a4b67c745d3cd3e120f
+#    Author: Andrew Miller <andrew@84em.com>
+#    Date:   Wed Jun 15 10:45:44 2022 -0500
+#      This is a slack deployment test
+
+# get last commit message
+last_commit="$(git log -1)"
+
+# escape double quotes
+last_commit="$(echo "$last_commit"|sed -e 's|["'\'']||g')"
+
+# get our host name
+host="$(hostname)"
+
+# build our json string
+json='{"text":"'"$host - $last_commit"'"}'
+
+# post it to slack
+curl --location --request POST 'https://hooks.slack.com/services/XXXXXXXXXXXXXX' --header 'Content-Type: application/json' --data-raw "${json}"
